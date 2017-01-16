@@ -4,7 +4,7 @@ resources:
   type: git
   source:
     uri: https://github.com/bstarke/platform-acceleration-movie-fun.git
-    branch: master
+    branch: spring-boot
 - name: deploy-movie-fun
   type: cf
   source:
