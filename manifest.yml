@@ -1,0 +1,10 @@
+applications:
+- name: movie-fun-bstarkenberg
+  instances: 1
+  memory: 384M
+  disk_quota: 192M
+  random-route: true
+  stack: cflinuxfs2
+  path: target/movie-fun-0.0.1-SNAPSHOT.jar
+  services:
+    - mysqldb

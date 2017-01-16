@@ -21,13 +21,12 @@ jobs:
   plan:
   - get: movie-fun-source
     trigger: true
-    passed: [test]
   - task: package
     file: movie-fun-source/ci/tasks/package.yml
-  - put: deploy-attendee-service
+  - put: deploy-movie-fun
     params:
       manifest: movie-fun-source/manifest.yml
-      path: package-output/movie-fun.jar
+      path: package-output/moviefun.war
 
 - name: smoke_test
   public: true
@@ -38,4 +37,4 @@ jobs:
   - task: smoke_test
     file: movie-fun-source/ci/tasks/smoke-test.yml
     params:
-      ATTENDEE_SERVICE_URL: http://movie-fun-?-?.cfapps-02.haas-66.pez.pivotal.io
+      MOVIE_FUN_HEALTH_URL: http://movie-fun-bstarkenberg.cfapps-02.haas-66.pez.pivotal.io/health

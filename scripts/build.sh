@@ -8,4 +8,4 @@ if [ "$#" -ne 1 ]; then
 fi
 
 ./mvnw package
-cp target/attendee-service-0.0.1-SNAPSHOT.jar $1
+cp target/moviefun.war $1
