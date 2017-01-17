@@ -1,6 +1,6 @@
 #!/bin/bash
-describe "movie fun applicaiton"
-  describe "GET /"
+describe "movie fun application"
+  describe "GET $MOVIE_FUN_HEALTH_URL"
     http_result=`curl -s -o /dev/null -H 'Accept: application/json' $MOVIE_FUN_HEALTH_URL -w "%{http_code},%{content_type}"`
     http_code=`echo $http_result | cut -d, -f1`
     content_type=`echo $http_result | cut -d, -f2`
