@@ -1,0 +1,12 @@
+applications:
+- name: moviefun
+  instances: 1
+  memory: 512M
+  disk_quota: 384M
+  routes:
+  - route: moviefun-bstarke.cfapps-02.haas-66.pez.pivotal.io
+  buildpack: java_buildpack_offline
+  services:
+  - movies-mysql
+  stack: cflinuxfs2
+  path: target/moviefun.war
