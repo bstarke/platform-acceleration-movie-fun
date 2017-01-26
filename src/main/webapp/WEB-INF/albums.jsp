@@ -67,6 +67,7 @@
             <td><b>Title</b></td>
             <td><b>Artist</b></td>
             <td><b>Year</b></td>
+            <td><b>Rating</b></td>
         </tr>
 
         <c:forEach items="${requestScope.albums}" var="album">
@@ -74,6 +75,7 @@
                 <td> ${album.title} </td>
                 <td> ${album.artist} </td>
                 <td> ${album.year} </td>
+                <td> ${album.rating} </td>
                 <td><a href="/albums/${album.id}">Details</a></td>
             </tr>
         </c:forEach>

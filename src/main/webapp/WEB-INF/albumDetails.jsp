@@ -73,6 +73,9 @@
         <dt>Year</dt>
         <dd>${requestScope.album.year}</dd>
 
+        <dt>Rating</dt>
+        <dd>${requestScope.album.rating}</dd>
+
         <dt>Cover</dt>
         <dd><img src="/albums/${requestScope.album.id}/cover" alt="Album Cover" class="cover"></dd>
     </dl>
