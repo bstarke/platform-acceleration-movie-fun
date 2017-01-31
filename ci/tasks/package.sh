@@ -4,7 +4,7 @@ set -ex
 
 pushd movie-fun-source
   echo "Packaging WAR"
-  ./mvnw clean package -DskipTests
+  ./graldew clean build -x test
 popd
 
 war_count=`find movie-fun-source/target -type f -name *.war | wc -l`

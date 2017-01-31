@@ -4,10 +4,10 @@ set -ex
 
 pushd movie-fun-source
   echo "Fetching Dependencies"
-  ./mvnw clean compile > /dev/null
+  ./gradlew clean build -x test > /dev/null
 
   echo "Running Tests"
-  ./mvnw test
+  ./gradlew test
 popd
 
 exit 0
