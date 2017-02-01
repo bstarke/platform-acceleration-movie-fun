@@ -6,18 +6,10 @@ plugins {
 }
 
 apply from: "../../java.gradle"
+apply from: "../db.gradle"
 
 dependencies {
-    compile "mysql:mysql-connector-java:5.1.40"
-}
-
-task cfMigrate(type: FlywayMigrateTask) {
-    extension = new FlywayExtension(
-            url: "jdbc:mysql://127.0.0.1:63306/cf_eb1e98fe_facb_458b_947b_73726bcd8324",
-            user: "RfWaapPxdLHcXqCx",
-            password: "Fau5zqDjIFHVouy3",
-            outOfOrder: false
-    )
+    compile "mysql:mysql-connector-java:$mysqlVersion"
 }
 
 flyway {
@@ -25,3 +17,31 @@ flyway {
     user = "root"
     outOfOrder = false
 }
+
+def tunnelProcess
+
+task openTunnel {
+    doLast {
+        println 'Opening Tunnel'
+        Thread.start {
+            tunnelProcess = "cf ssh -N -L 63306:${getMysqlHost("album-service")}:3306 album-service".execute()
+        }
+
+        sleep 5_000L
+    }
+}
+
+task closeTunnel {
+    doLast {
+        println 'Closing Tunnel'
+        tunnelProcess.destroy()
+    }
+}
+
+task cfMigrate(type: FlywayMigrateTask, dependsOn: openTunnel) {
+    if (System.env.CF_MIGRATE) {
+        extension = setupProdFlywayExtension(new FlywayExtension(), "album-service")
+    }
+}
+
+cfMigrate.finalizedBy closeTunnel

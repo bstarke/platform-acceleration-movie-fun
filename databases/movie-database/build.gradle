@@ -6,19 +6,10 @@ plugins {
 }
 
 apply from: "../../java.gradle"
+apply from: "../db.gradle"
 
 dependencies {
-    compile "mysql:mysql-connector-java:5.1.40"
-}
-
-
-task cfMigrate(type: FlywayMigrateTask) {
-    extension = new FlywayExtension(
-            url: "jdbc:mysql://127.0.0.1:63306/cf_deee13a2_2309_46d2_82f7_75623e8116c8",
-            user: "RvTyH9mCx5AS21Vl",
-            password: "roOsHFzaDAGEgQBV",
-            outOfOrder: false
-    )
+    compile "mysql:mysql-connector-java:$mysqlVersion"
 }
 
 flyway {
@@ -26,3 +17,31 @@ flyway {
     user = "root"
     outOfOrder = false
 }
+
+def tunnelProcess
+
+task openTunnel {
+    doLast {
+        println 'Opening Tunnel'
+        Thread.start {
+            tunnelProcess = "cf ssh -N -L 63306:${getMysqlHost("movie-service")}:3306 movie-service".execute()
+        }
+
+        sleep 5_000L
+    }
+}
+
+task closeTunnel {
+    doLast {
+        println 'Closing Tunnel'
+        tunnelProcess.destroy()
+    }
+}
+
+task cfMigrate(type: FlywayMigrateTask, dependsOn: openTunnel) {
+    if (System.env.CF_MIGRATE) {
+        extension = setupProdFlywayExtension(new FlywayExtension(), "movie-service")
+    }
+}
+
+cfMigrate.finalizedBy closeTunnel
