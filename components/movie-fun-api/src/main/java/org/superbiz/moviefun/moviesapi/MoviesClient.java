@@ -45,7 +45,7 @@ public class MoviesClient {
 
     public List<MovieInfo> findAll(int start, int pageSize) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(moviesUrl)
-            .queryParam("start", start)
+            .queryParam("page", start)
             .queryParam("pageSize", pageSize);
 
         return restOperations.exchange(builder.toUriString(), GET, null, movieListType).getBody();
@@ -55,7 +55,7 @@ public class MoviesClient {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(moviesUrl)
             .queryParam("field", field)
             .queryParam("key", key)
-            .queryParam("start", start)
+            .queryParam("page", start)
             .queryParam("pageSize", pageSize);
 
         return restOperations.exchange(builder.toUriString(), GET, null, movieListType).getBody();

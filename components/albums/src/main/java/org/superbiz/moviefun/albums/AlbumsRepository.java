@@ -1,4 +1,6 @@
-package org.superbiz.moviefun.albums; /**
+package org.superbiz.moviefun.albums;
+
+/**
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -15,42 +17,10 @@ package org.superbiz.moviefun.albums; /**
  * limitations under the License.
  */
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaQuery;
-import java.util.List;
 
 @Repository
-public class AlbumsRepository {
+public interface AlbumsRepository extends JpaRepository<Album, Long> {
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    @Transactional
-    public void addAlbum(Album album) {
-        entityManager.persist(album);
-    }
-
-    public Album find(long id) {
-        return entityManager.find(Album.class, id);
-    }
-
-    public List<Album> getAlbums() {
-        CriteriaQuery<Album> cq = entityManager.getCriteriaBuilder().createQuery(Album.class);
-        cq.select(cq.from(Album.class));
-        return entityManager.createQuery(cq).getResultList();
-    }
-
-    @Transactional
-    public void deleteAlbum(Album album) {
-        entityManager.remove(album);
-    }
-
-    @Transactional
-    public void updateAlbum(Album album) {
-        entityManager.merge(album);
-    }
 }

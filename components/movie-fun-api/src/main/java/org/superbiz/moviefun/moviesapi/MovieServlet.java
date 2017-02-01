@@ -114,9 +114,9 @@ public class MovieServlet extends HttpServlet {
             List<MovieInfo> range;
 
             if (StringUtils.isEmpty(key) || StringUtils.isEmpty(field)) {
-                range = moviesClient.findAll(start, PAGE_SIZE);
+                range = moviesClient.findAll(page -1, PAGE_SIZE);
             } else {
-                range = moviesClient.findRange(field, key, start, PAGE_SIZE);
+                range = moviesClient.findRange(field, key, page - 1, PAGE_SIZE);
             }
 
             int end = start + range.size();

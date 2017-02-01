@@ -6,6 +6,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.superbiz.moviefun.CsvUtils;
 import org.superbiz.moviefun.blobstore.Blob;
 import org.superbiz.moviefun.blobstore.BlobStore;
@@ -40,6 +41,7 @@ public class AlbumsUpdater {
         objectReader = new CsvMapper().readerFor(Album.class).with(schema);
     }
 
+    @Transactional
     public void update() throws IOException {
         Optional<Blob> maybeBlob = blobStore.get("albums.csv");
 
@@ -49,39 +51,42 @@ public class AlbumsUpdater {
         }
 
         List<Album> albumsToHave = CsvUtils.readFromCsv(objectReader, maybeBlob.get().inputStream);
-        List<Album> albumsWeHave = albumsRepository.getAlbums();
+        List<Album> albumsWeHave = albumsRepository.findAll();
 
         createNewAlbums(albumsToHave, albumsWeHave);
         deleteOldAlbums(albumsToHave, albumsWeHave);
         updateExistingAlbums(albumsToHave, albumsWeHave);
     }
 
-
+    @Transactional
     private void createNewAlbums(List<Album> albumsToHave, List<Album> albumsWeHave) {
         Stream<Album> albumsToCreate = albumsToHave
             .stream()
             .filter(album -> albumsWeHave.stream().noneMatch(album::isEquivalent));
 
-        albumsToCreate.forEach(albumsRepository::addAlbum);
+        albumsToCreate.forEach(albumsRepository::save);
     }
 
+    @Transactional
     private void deleteOldAlbums(List<Album> albumsToHave, List<Album> albumsWeHave) {
         Stream<Album> albumsToDelete = albumsWeHave
             .stream()
             .filter(album -> albumsToHave.stream().noneMatch(album::isEquivalent));
 
-        albumsToDelete.forEach(albumsRepository::deleteAlbum);
+        albumsToDelete.forEach(albumsRepository::delete);
     }
 
+    @Transactional
     private void updateExistingAlbums(List<Album> albumsToHave, List<Album> albumsWeHave) {
         Stream<Album> albumsToUpdate = albumsToHave
             .stream()
             .map(album -> addIdToAlbumIfExists(albumsWeHave, album))
             .filter(Album::hasId);
 
-        albumsToUpdate.forEach(albumsRepository::updateAlbum);
+        albumsToUpdate.forEach(albumsRepository::save);
     }
 
+    @Transactional
     private Album addIdToAlbumIfExists(List<Album> existingAlbums, Album album) {
         Optional<Album> maybeExisting = existingAlbums.stream().filter(album::isEquivalent).findFirst();
         maybeExisting.ifPresent(existing -> album.setId(existing.getId()));

@@ -1,5 +1,10 @@
 package org.superbiz.moviefun.movies;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.JpaSort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -7,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/movies")
 public class MoviesController {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private MoviesRepository moviesRepository;
 
@@ -16,39 +22,41 @@ public class MoviesController {
 
     @PostMapping
     public void addMovie(@RequestBody Movie movie) {
-        moviesRepository.addMovie(movie);
+        moviesRepository.save(movie);
     }
 
     @DeleteMapping("/{movieId}")
     public void deleteMovieId(@PathVariable Long movieId) {
-        moviesRepository.deleteMovieId(movieId);
+        moviesRepository.delete(movieId);
     }
 
     @GetMapping("/count")
-    public int count(
+    public long count(
         @RequestParam(name = "field", required = false) String field,
         @RequestParam(name = "key", required = false) String key
     ) {
         if (field != null && key != null) {
-            return moviesRepository.count(field, key);
+            return moviesRepository.count();
         } else {
-            return moviesRepository.countAll();
+            return moviesRepository.count();
         }
     }
 
     @GetMapping
     public List<Movie> find(
+        @RequestParam(name = "page", required = false, defaultValue = "0") Integer page,
+        @RequestParam(name = "pageSize", required = false, defaultValue = "5") Integer pageSize,
         @RequestParam(name = "field", required = false) String field,
-        @RequestParam(name = "key", required = false) String key,
-        @RequestParam(name = "start", required = false) Integer start,
-        @RequestParam(name = "pageSize", required = false) Integer pageSize
+        @RequestParam(name = "key", required = false) String key
     ) {
+        logger.debug("Page: {};  PageSize: {};  Field: {};  Key: {}", page, pageSize, field, key);
         if (field != null && key != null) {
-            return moviesRepository.findRange(field, key, start, pageSize);
-        } else if (start != null && pageSize != null) {
-            return moviesRepository.findAll(start, pageSize);
+            Sort sort = new Sort(Sort.Direction.ASC, field);
+            return moviesRepository.findAll(new PageRequest(page, pageSize, sort)).getContent();
+        } else if (page != null && pageSize != null) {
+            return moviesRepository.findAll(new PageRequest(page ,pageSize)).getContent();
         } else {
-            return moviesRepository.getMovies();
+            return moviesRepository.findAll();
         }
     }
 }
