@@ -8,11 +8,16 @@ spring:
     url: jdbc:mysql://localhost:3306/albums?useSSL=false
     username: root
 
+security:
+    basic:
+        enabled: false
+
 logging.level:
   root: WARN
   org.superbiz.moviefun: DEBUG
 
 s3:
-  accessKey: <access key id>
-  secretKey: <secret access key>
-  bucketName: <name of the bucket>
+  accessKey: TP0HQC13TU4PYHFNE1FP
+  secretKey: PsGM3ssn0pJCt48+hGKIMzprTgg0ZlfH/zEYxFLH
+  bucketName: moviefun
+  endpointUrl: http://127.0.0.1:9000
