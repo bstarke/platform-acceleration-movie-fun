@@ -21,6 +21,9 @@ s3:
   secretKey: <secret access key>
   bucketName: <name of the bucket>
 
+movies:
+  pagesize: 6
+
 security:
   basic:
     enabled: false

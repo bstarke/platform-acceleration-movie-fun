@@ -1,23 +1,32 @@
 ---
 memory: 1G
 instances: 1
+disk_quota: 512M
+buildpack: java_buildpack_offline
 services:
 - movie-fun-sso
 - movie-fun-registry
+- paper-trail
 env:
-  TRUST_CERTS: api.cfapps-01.haas-66.pez.pivotal.io,basic-sso.login.run-01.haas-66.pez.pivotal.io
+  TRUST_CERTS: api.cfapps-02.haas-66.pez.pivotal.io,basic-sso.login.run-02.haas-66.pez.pivotal.io
 applications:
 - name: album-service
   path: applications/album-service/build/libs/album-service-1.1.0-SNAPSHOT.jar
+  random-route: true
   services:
   - album-database
   env:
     GRANT_TYPE: client_credentials
 - name: movie-service
   path: applications/movie-service/build/libs/movie-service-1.1.0-SNAPSHOT.jar
+  random-route: true
   services:
   - movie-database
   env:
     GRANT_TYPE: client_credentials
 - name: movie-fun-app
   path: applications/movie-fun-app/build/libs/movie-fun-app-1.1.0-SNAPSHOT.war
+  services:
+  - movie-fun-config
+  routes:
+  - route: movie-fun-app-bstarkenberg.cfapps-02.haas-66.pez.pivotal.io
